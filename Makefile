@@ -2,19 +2,19 @@ SHELL:=/bin/bash
 UNAME:=$(shell uname | tr '[A-Z]' '[a-z]')
 
 BITS?=32
-ifeq ($(UNAME), darwin)
-  READLINK_ARGS:=""
-  PLATFORM_WARNINGS:=-Weverything -Wno-c++98-compat-pedantic -Wno-padded \
-	-Wno-missing-prototypes
-  PLATFORM_COPTS:=-std=c++11 -stdlib=libc++ -DTARGET_RT_MAC_CFM=0
-  HEADERS:=Headers
-  CC=clang++
-  LDFLAGS=-Wl,-fatal_warnings -Wl,-std=c++11 -Wl,-stdlib=libc++
-  ifeq ($(BITS), 64)
-    # Why is this not $!$#@ defined?
-    PLATFORM_COPTS+=-D__LP64__=1
-  endif
-else ifeq ($(UNAME), linux)
+# ifeq ($(UNAME), darwin)
+#   READLINK_ARGS:=""
+#   PLATFORM_WARNINGS:=-Weverything -Wno-c++98-compat-pedantic -Wno-padded \
+# 	-Wno-missing-prototypes
+#   PLATFORM_COPTS:=-std=c++11 -stdlib=libc++ -DTARGET_RT_MAC_CFM=0
+#   HEADERS:=Headers
+#   CC=clang++
+#   LDFLAGS=-Wl,-fatal_warnings -Wl,-std=c++11 -Wl,-stdlib=libc++
+#   ifeq ($(BITS), 64)
+#     # Why is this not $!$#@ defined?
+#     PLATFORM_COPTS+=-D__LP64__=1
+#   endif
+# else ifeq ($(UNAME), linux)
   READLINK_ARGS:="-f"
   PLATFORM_COPTS:=-mfpmath=sse -std=gnu++0x
   PLATFORM_WARNINGS:=-Wframe-larger-than=16384 -Wno-unused-but-set-variable \
@@ -23,7 +23,7 @@ else ifeq ($(UNAME), linux)
   HEADERS:=include
   CC=g++
   LDFLAGS=-Wl,--fatal-warnings
-endif
+# endif
 
 JAVA_HOME := $(shell \
 	[[ -n "$${JAVA_HOME}" ]] || \
@@ -46,7 +46,7 @@ GLOBAL_COPTS=-fdiagnostics-show-option -fno-exceptions \
 COPTS:=$(PLATFORM_COPTS) $(GLOBAL_COPTS) $(PLATFORM_WARNINGS) \
 	$(GLOBAL_WARNINGS) $(OPT)
 
-INCLUDES=-I$(JAVA_HOME)/$(HEADERS) -I$(JAVA_HOME)/$(HEADERS)/$(UNAME)
+INCLUDES=-I$(JAVA_HOME)/Headers -I$(JAVA_HOME)/include -I$(JAVA_HOME)/Headers/$(UNAME) -I$(JAVA_HOME)/include/$(UNAME)
 
 
 # LDFLAGS+=-Wl,--export-dynamic-symbol=Agent_OnLoad
